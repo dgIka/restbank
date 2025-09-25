@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-cards
+      author: you
+      changes: []

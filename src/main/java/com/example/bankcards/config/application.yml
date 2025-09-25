@@ -1,0 +1,65 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: bank-cards-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bankcards
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/migration/db.changelog-master.yaml
+
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+    time-zone: UTC
+
+app:
+  jwt:
+    issuer: bank-cards
+    secret: "change-me-in-env"     #temp-----------------------------------------
+    access-token-ttl: 3600s
+    refresh-token-ttl: 30d
+
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operationsSorter: method
+
+# Базовая CORS-заглушка (на dev-разработке)
+# Позже заменим на CorsConfigurationSource (Java-config), это просто старт. -----------------------------
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+  allowed-methods: [ "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" ]
+  allowed-headers: [ "Authorization", "Content-Type" ]
+  allow-credentials: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
