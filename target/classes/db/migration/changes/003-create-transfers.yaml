@@ -1,0 +1,78 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-create-transfers
+      author: you
+      changes:
+        - createTable:
+            tableName: transfers
+            columns:
+              - column: { name: id, type: UUID, constraints: { primaryKey: true, nullable: false } }
+
+              - column: { name: from_card_id, type: UUID, constraints: { nullable: false } }
+              - column: { name: to_card_id, type: UUID, constraints: { nullable: false } }
+
+              - column: { name: amount, type: "NUMERIC(19,2)", constraints: { nullable: false } }
+
+              - column: { name: idempotency_key, type: VARCHAR(100) }
+
+              - column: { name: created_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: NOW(), constraints: { nullable: false } }
+              - column: { name: updated_at, type: TIMESTAMP WITH TIME ZONE, defaultValueComputed: NOW(), constraints: { nullable: false } }
+              - column: { name: executed_at, type: TIMESTAMP WITH TIME ZONE }
+
+
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: from_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_from_card
+            onDelete: RESTRICT
+
+        - addForeignKeyConstraint:
+            baseTableName: transfers
+            baseColumnNames: to_card_id
+            referencedTableName: cards
+            referencedColumnNames: id
+            constraintName: fk_transfers_to_card
+            onDelete: RESTRICT
+
+        - addUniqueConstraint:
+            tableName: transfers
+            columnNames: idempotency_key
+            constraintName: uq_transfers_idempotency_key
+            deferrable: false
+            initiallyDeferred: false
+
+        - createIndex:
+            tableName: transfers
+            indexName: idx_transfers_from_card
+            columns:
+              - column: { name: from_card_id }
+
+        - createIndex:
+            tableName: transfers
+            indexName: idx_transfers_to_card
+            columns:
+              - column: { name: to_card_id }
+
+        - createIndex:
+            tableName: transfers
+            indexName: idx_transfers_created_at
+            columns:
+              - column: { name: created_at }
+
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE transfers
+              ADD CONSTRAINT chk_transfers_amount_positive
+              CHECK (amount > 0);
+        - sql:
+            dbms: postgresql
+            sql: |
+              ALTER TABLE transfers
+              ADD CONSTRAINT chk_transfers_cards_distinct
+              CHECK (from_card_id <> to_card_id);
+
+      rollback:
+        - dropTable: { tableName: transfers, cascadeConstraints: true }
