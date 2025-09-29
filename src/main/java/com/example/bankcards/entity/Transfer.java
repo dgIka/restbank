@@ -45,5 +45,5 @@ public class Transfer extends AbstractEntity<UUID> {
     private OffsetDateTime executedAt;
 
     @Override
-    protected UUID getId() { return id; }
+    public UUID getId() { return id; }
 }

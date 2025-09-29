@@ -8,7 +8,7 @@ import java.util.Objects;
 @MappedSuperclass
 public abstract class AbstractEntity<ID> {
 
-    protected abstract ID getId();
+    public abstract ID getId();
 
     @Override
     public final boolean equals(Object o) {

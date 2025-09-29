@@ -50,6 +50,6 @@ public class Card extends AbstractEntity{
     private OffsetDateTime updatedAt;
 
     @Override
-    protected UUID getId() { return id; }
+    public UUID getId() { return id; }
 
 }
