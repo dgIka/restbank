@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-seed-roles
+      author: Ika
+      changes:
+        - sql:
+            dbms: postgresql
+            sql: |
+              -- name у нас уникален, поэтому можно использовать ON CONFLICT DO NOTHING
+              INSERT INTO roles(name) VALUES ('USER')   ON CONFLICT (name) DO NOTHING;
+              INSERT INTO roles(name) VALUES ('ADMIN')  ON CONFLICT (name) DO NOTHING;
+      rollback:
+        - sql:
+            dbms: postgresql
+            sql: |
+              DELETE FROM roles WHERE name IN ('USER','ADMIN');

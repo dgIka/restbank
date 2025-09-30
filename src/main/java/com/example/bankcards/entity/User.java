@@ -52,4 +52,16 @@ public class User extends AbstractEntity<UUID> {
 
     @Override
     public UUID getId() {return id;}
+
+    @PrePersist
+    void prePersist() {
+        var now = OffsetDateTime.now();
+        if (createdAt == null) createdAt = now;
+        if (updatedAt == null) updatedAt = now;
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        updatedAt = OffsetDateTime.now();
+    }
 }

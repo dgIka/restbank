@@ -63,3 +63,7 @@ logging:
     org.springframework.security: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
+
+security:
+  pan:
+    pepper: "change-me-in-env"      #-------------------------------------------------

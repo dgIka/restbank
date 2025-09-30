@@ -20,9 +20,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TransferService {
-    private final TransferService transferService;
     private final CardRepository cardRepository;
-    private final CardService cardService;
     private final TransferRepository transferRepository;
 
     @Transactional
@@ -42,8 +40,8 @@ public class TransferService {
         UUID first = Comparator.<UUID>naturalOrder().compare(a, b) <= 0 ? a : b;
         UUID second = first.equals(a) ? b : a;
 
-        Card firstLocked = cardService.lockCardForUpdate(first);
-        Card secondLocked = cardService.lockCardForUpdate(second);
+        Card firstLocked = lock(first);
+        Card secondLocked = lock(second);
 
         Card from = firstLocked.getId().equals(transferRequest.getFromCardId()) ? firstLocked : secondLocked;
         Card to   = from == firstLocked ? secondLocked : firstLocked;
@@ -101,6 +99,11 @@ public class TransferService {
         dto.setAmount(t.getAmount());
         dto.setExecutedAt(t.getExecutedAt());
         return dto;
+    }
+
+    Card lock(UUID id) {
+        return cardRepository.findByIdForUpdate(id)
+                .orElseThrow(() -> new IllegalArgumentException("Card not found: " + id));
     }
 
 }
