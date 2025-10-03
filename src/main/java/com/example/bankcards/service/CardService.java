@@ -57,12 +57,11 @@ public class CardService{
         return toResponse(card);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<CardResponse> pageMyCards(UUID userId, CardStatus cardStatus, Pageable pageable) {
-        Page<Card> page;
-        if (cardStatus == null) {
-            page = cardRepository.findById(userId, pageable);
-        } else { page = cardRepository.findByIdAndStatus(userId, cardStatus, pageable);}
+        Page<Card> page = (cardStatus == null)
+                ? cardRepository.findAllByUserId(userId, pageable)
+                : cardRepository.findAllByUserIdAndStatus(userId, cardStatus, pageable);
         return page.map(this::toResponse);
     }
 

@@ -19,8 +19,8 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
     @Query("select c from Card c where c.id = :id")
     Optional<Card> findByIdForUpdate(@Param("id")UUID id);
 
-    Page<Card> findById(UUID Id, Pageable p);
-    Page<Card> findByIdAndStatus(UUID Id, CardStatus status, Pageable p);
+    Page<Card> findAllByUserId(UUID userId, Pageable pageable);
+    Page<Card> findAllByUserIdAndStatus(UUID userId, CardStatus status, Pageable pageable);
 
     Optional<Card> findByPanHash(String panHash);
 
