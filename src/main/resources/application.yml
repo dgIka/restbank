@@ -30,12 +30,13 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
     time-zone: UTC
 
-app:
+security:
   jwt:
     issuer: bank-cards
-    secret: "change-me-in-env"     #temp-----------------------------------------
-    access-token-ttl: 3600s
-    refresh-token-ttl: 30d
+    secret: ${JWT_SECRET:change-me-32-bytes-minimum-please-123456}
+    ttl-seconds: 3600
+  pan:
+    pepper: ${PAN_PEPPER:dev-something}
 
 
 springdoc:
@@ -47,15 +48,6 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: method
 
-# Базовая CORS-заглушка (на dev-разработке)
-# Позже заменим на CorsConfigurationSource (Java-config), это просто старт. -----------------------------
-cors:
-  allowed-origins:
-    - "http://localhost:3000"
-    - "http://127.0.0.1:3000"
-  allowed-methods: [ "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS" ]
-  allowed-headers: [ "Authorization", "Content-Type" ]
-  allow-credentials: true
 
 logging:
   level:
@@ -64,6 +56,3 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.orm.jdbc.bind: TRACE
 
-security:
-  pan:
-    pepper: "change-me-in-env"      #-------------------------------------------------
