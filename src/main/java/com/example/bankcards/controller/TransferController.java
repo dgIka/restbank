@@ -4,6 +4,8 @@ import com.example.bankcards.dto.TransferRequest;
 import com.example.bankcards.dto.TransferResponse;
 import com.example.bankcards.service.TransferService;
 import com.example.bankcards.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
-
+@Tag(name = "Transfer", description = "Перевод между своими картами")
 @RestController
 @RequestMapping("/api/transfers")
 public class TransferController {
@@ -25,7 +27,7 @@ public class TransferController {
         this.userService = userService;
     }
 
-
+    @Operation(summary = "Перевод")
     @PostMapping
     @PreAuthorize("hasRole('USER')")
     public TransferResponse transfer(@RequestBody @Valid TransferRequest request,

@@ -5,6 +5,8 @@ import com.example.bankcards.dto.CardResponse;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.service.CardService;
 import com.example.bankcards.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Locale;
 import java.util.UUID;
 
+@Tag(name = "Card", description = "Взаимодействие с картами")
 @RestController
 @RequestMapping("/api/cards")
 public class CardController {
@@ -28,14 +31,14 @@ public class CardController {
         this.cardService = cardService;
         this.userService = userService;
     }
-
+    @Operation(summary = "Выпуск новой карты")
     @PostMapping("/issue/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
     public CardResponse issueForUser(@PathVariable UUID userId,
                                      @RequestBody @Valid CardCreateRequest req) {
         return cardService.createForUser(userId, req);
     }
-
+    @Operation(summary = "Пагинация")
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public Page<CardResponse> pageMyCards(@RequestParam(required = false) String status,
@@ -51,19 +54,19 @@ public class CardController {
         }
         return cardService.pageMyCards(userId, st, pageable);
     }
-
+    @Operation(summary = "Блокировка карты")
     @PostMapping("/{cardId}/block")
     @PreAuthorize("hasRole('USER')")
     public void blockMyCard(@PathVariable UUID cardId) {
         cardService.block(cardId);
     }
-
+    @Operation(summary = "Активация карты")
     @PostMapping("/{cardId}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     public void activate(@PathVariable UUID cardId) {
         cardService.activate(cardId);
     }
-
+    @Operation(summary = "Удаление карты")
     @DeleteMapping("/{cardId}")
     @PreAuthorize("hasRole('ADMIN')")
     public void delete(@PathVariable UUID cardId) {
