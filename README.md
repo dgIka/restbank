@@ -51,8 +51,7 @@ java -jar target/bank-cards-backend-0.0.1-SNAPSHOT.jar
 
 При старте выполняются миграции Liquibase (создаются таблицы, добавляются роли `USER` и `ADMIN`).
 
-### 2. Docker Compose (опционально)
-*(TODO: добавить docker-compose.yml с Postgres + backend)*
+
 
 ## API
 Документация доступна после запуска:
