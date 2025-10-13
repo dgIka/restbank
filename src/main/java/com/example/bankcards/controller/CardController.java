@@ -31,6 +31,7 @@ public class CardController {
         this.cardService = cardService;
         this.userService = userService;
     }
+
     @Operation(summary = "Выпуск новой карты")
     @PostMapping("/issue/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -38,6 +39,7 @@ public class CardController {
                                      @RequestBody @Valid CardCreateRequest req) {
         return cardService.createForUser(userId, req);
     }
+
     @Operation(summary = "Пагинация")
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -54,18 +56,21 @@ public class CardController {
         }
         return cardService.pageMyCards(userId, st, pageable);
     }
+
     @Operation(summary = "Блокировка карты")
     @PostMapping("/{cardId}/block")
     @PreAuthorize("hasRole('USER')")
     public void blockMyCard(@PathVariable UUID cardId) {
         cardService.block(cardId);
     }
+
     @Operation(summary = "Активация карты")
     @PostMapping("/{cardId}/activate")
     @PreAuthorize("hasRole('ADMIN')")
     public void activate(@PathVariable UUID cardId) {
         cardService.activate(cardId);
     }
+
     @Operation(summary = "Удаление карты")
     @DeleteMapping("/{cardId}")
     @PreAuthorize("hasRole('ADMIN')")

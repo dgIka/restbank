@@ -1,4 +1,4 @@
-databaseChangeLog:
+ databaseChangeLog:
   - changeSet:
       id: 001-create-users-and-roles
       author: Ika

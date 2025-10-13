@@ -4,6 +4,7 @@ import com.example.bankcards.dto.UserRegisterRequest;
 import com.example.bankcards.dto.UserResponse;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.security.JwtService;
+import com.example.bankcards.service.AuthService;
 import com.example.bankcards.service.UserService;
 import com.example.bankcards.dto.auth.LoginRequest;
 import com.example.bankcards.dto.auth.JwtResponse;
@@ -24,37 +25,23 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
     public AuthController(JwtService jwtService,
                           UserService userService,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder, AuthService authService) {
         this.jwtService = jwtService;
         this.userService = userService;
-        this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
     }
     @Operation(summary = "Логин", description = "Возвращает токен")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req) {
-        User user;
-        try {
-            user = userService.findByEmailWithRolesOrThrow(req.getEmail());
-        } catch (Exception ex) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
-        }
+        User user = userService.findByEmailWithRolesOrThrow(req.getEmail());
 
-        if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Invalid credentials"));
-        }
+        JwtResponse jwt = authService.login(req, user, jwtService);
 
-        var roles = user.getRoles().stream().map(r -> r.getName()).collect(java.util.stream.Collectors.toSet());
-
-        String token = jwtService.generate(user.getEmail(), Map.of(
-                "uid", user.getId().toString(),
-                "roles", roles
-        ));
-
-        return ResponseEntity.ok(new JwtResponse(token, "Bearer", user.getEmail(), roles));
+        return ResponseEntity.ok(jwt);
     }
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/register")

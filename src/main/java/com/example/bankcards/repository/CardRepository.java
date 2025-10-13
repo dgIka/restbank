@@ -17,9 +17,10 @@ public interface CardRepository extends JpaRepository<Card, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select c from Card c where c.id = :id")
-    Optional<Card> findByIdForUpdate(@Param("id")UUID id);
+    Optional<Card> findByIdForUpdate(@Param("id") UUID id);
 
     Page<Card> findAllByUserId(UUID userId, Pageable pageable);
+
     Page<Card> findAllByUserIdAndStatus(UUID userId, CardStatus status, Pageable pageable);
 
     Optional<Card> findByPanHash(String panHash);

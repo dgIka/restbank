@@ -66,7 +66,7 @@ public class UserService {
     @Transactional(readOnly = true)
     public User findByEmailWithRolesOrThrow(String email) {
         return userRepository.findByEmailWithRoles(email)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "User not found by email"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED, "Invalid credentials"));
     }
 }
