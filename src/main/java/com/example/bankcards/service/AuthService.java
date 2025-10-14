@@ -20,10 +20,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final UserService userService;
 
 
     @Transactional
-    public JwtResponse login(LoginRequest req, User user, JwtService jwtService) {
+    public JwtResponse login(LoginRequest req) {
+        User user = userService.findByEmailWithRolesOrThrow(req.getEmail());
+
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }

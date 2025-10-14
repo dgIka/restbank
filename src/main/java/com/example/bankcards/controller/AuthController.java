@@ -23,26 +23,20 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final JwtService jwtService;
     private final UserService userService;
     private final AuthService authService;
 
-    public AuthController(JwtService jwtService,
-                          UserService userService,
-                          PasswordEncoder passwordEncoder, AuthService authService) {
-        this.jwtService = jwtService;
+    public AuthController(UserService userService, AuthService authService) {
         this.userService = userService;
         this.authService = authService;
     }
+
     @Operation(summary = "Логин", description = "Возвращает токен")
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest req) {
-        User user = userService.findByEmailWithRolesOrThrow(req.getEmail());
-
-        JwtResponse jwt = authService.login(req, user, jwtService);
-
-        return ResponseEntity.ok(jwt);
+        return ResponseEntity.ok(authService.login(req));
     }
+
     @Operation(summary = "Регистрация пользователя")
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody @Valid UserRegisterRequest request) {

@@ -17,6 +17,12 @@ public class GlobalExceptionHandler {
         return buildResponse((HttpStatus) e.getStatusCode(), e.getReason(), e.getMessage(), request);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIAE(IllegalArgumentException ex, WebRequest req) {
+        return buildResponse(HttpStatus.BAD_REQUEST, "BAD_REQUEST", ex.getMessage(), req);
+    }
+
+
 
 
     private ResponseEntity<ErrorResponse> buildResponse(HttpStatus status, String code, String message, WebRequest request) {

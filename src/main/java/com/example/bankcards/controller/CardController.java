@@ -4,6 +4,7 @@ import com.example.bankcards.dto.CardCreateRequest;
 import com.example.bankcards.dto.CardResponse;
 import com.example.bankcards.entity.CardStatus;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.CurrentUserService;
 import com.example.bankcards.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,10 +27,12 @@ public class CardController {
 
     private final CardService cardService;
     private final UserService userService;
+    private final CurrentUserService currentUserService;
 
-    public CardController(CardService cardService, UserService userService) {
+    public CardController(CardService cardService, UserService userService, CurrentUserService currentUserService) {
         this.cardService = cardService;
         this.userService = userService;
+        this.currentUserService = currentUserService;
     }
 
     @Operation(summary = "Выпуск новой карты")
@@ -43,18 +46,11 @@ public class CardController {
     @Operation(summary = "Пагинация")
     @GetMapping
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public Page<CardResponse> pageMyCards(@RequestParam(required = false) String status,
+    public Page<CardResponse> pageMyCards(@RequestParam(required = false) CardStatus status,
                                           Pageable pageable) {
-        UUID userId = currentUserId();
-        CardStatus st = null;
-        if (status != null && !status.isBlank()) {
-            try {
-                st = CardStatus.valueOf(status.toUpperCase(Locale.ROOT));
-            } catch (IllegalArgumentException ex) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown status: " + status);
-            }
-        }
-        return cardService.pageMyCards(userId, st, pageable);
+        UUID userId = currentUserService.getCurrentUserId();
+
+        return cardService.pageMyCards(userId, status, pageable);
     }
 
     @Operation(summary = "Блокировка карты")
@@ -78,11 +74,5 @@ public class CardController {
         cardService.delete(cardId);
     }
 
-    private UUID currentUserId() {
-        var auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authentication");
-        }
-        return userService.findByEmailOrThrow(auth.getName()).getId();
-    }
+
 }
